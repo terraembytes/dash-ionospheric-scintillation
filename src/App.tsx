@@ -13,8 +13,11 @@ function App() {
       </div>
 
       {/*DIV DA AREA DOS DASHBOARDS*/}
-      <div className='bg-gray-100 w-full h-screen mt-6 rounded-2xl p-2 shadow-lg'>
-        Hello World
+      <div className='bg-gray-100 w-full h-screen mt-6 rounded-2xl p-2 shadow-lg grid grid-cols-2 gap-4'>
+       <div className='border shadow-md p-1'>Gráfico 1</div>
+       <div className='border shadow-md p-1'>Gráfico 2</div>
+       <div className='border shadow-md p-1'>Gráfico 3</div>
+       <div className='border shadow-md p-1'>Gráfico 4</div>
       </div>
     </div>
   )
