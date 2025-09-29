@@ -1,8 +1,22 @@
 import './App.css'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import imglogo from './assets/img/logo.png'
 
-function App() {
+//Função para buscar os dados gerais da API
+async function getData(dateStart: string = '2025-01-01', dateEnd: string = '2025-01-01', station: string = 'CTAS') {
+  const response = await axios.get(`http://127.0.0.1:8000/api/data/?start=${dateStart}&end=${dateEnd}&station=${station}`);
 
+  return response.data;
+}
+
+function App() {
+  //recebendo os dados da API, bem como status de load e error
+  //usando queryKey para colocar um identificador na função getData
+  const { data, isLoading, isError } = useQuery({ queryKey: ['all'], queryFn: getData })
+
+  if(isLoading) return <h2>Carregando...</h2>
+  if(isError) return <h2>Ocorreu um erro ao realizar a requisição!</h2>
   return (
     <div className='overflow-hidden'>
       {/*DIV DO HEADER*/}
