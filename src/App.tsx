@@ -11,6 +11,16 @@ interface dataParams {
   station: string
 }
 
+interface dataParamsFilter {
+    elev: number,
+    elevType: number,
+    constellation: string,
+    time: string,
+    dateStart: string,
+  dateEnd: string,
+  station: string
+}
+
 interface DataGeral {
       Date: string,
       Svid: number,
@@ -18,7 +28,13 @@ interface DataGeral {
       Elevation: number
 }
 
+interface DataCount {
+  Date: string,
+  S4_variance: number
+}
+
 type DataQueryKey = ['data', dataParams]
+type DataQueryKeyCount = ['dataCount', dataParamsFilter]
 
 const apiClient = axios.create({baseURL: 'http://127.0.0.1:8000/api',})
 
@@ -38,11 +54,33 @@ async function getData(context: QueryFunctionContext<DataQueryKey>) {
   return response.data.data;
 }
 
+async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
+  const [_key, params] = context.queryKey
+  const {elev, elevType, constellation, time, dateStart, dateEnd, station} = params;
+  const response = await apiClient.get('/data/filters/contGraphs/', {
+    params: {
+      elev: elev,
+      elevType: elevType,
+      constellation: constellation,
+      time: time,
+      start: dateStart,
+      end: dateEnd,
+      station: station
+    }
+  })
+
+  return response.data.data;
+}
+
 function App() {
   //states temporarios para fins de teste
   const [dateStart] = useState('2025-01-01');
   const [dateEnd] = useState('2025-01-2');
   const [station] = useState('CTAS');
+  const [elev] = useState(0)
+  const [elevType] = useState(1)
+  const [constellation] = useState('ALL')
+  const [time] = useState('1 minuto')
   //recebendo os dados da API, bem como status de load e error
   //usando queryKey para colocar um identificador na função getData
   const { data, isLoading, isError, status } = useQuery({ 
@@ -53,20 +91,22 @@ function App() {
       //enabled: !!(dateStart && dateEnd && station) //garantir que todos os parametros estão preenchidos
     })
 
+  const dataCount = useQuery({
+    queryKey: ['dataCount', {elev, elevType, constellation, time, dateStart, dateEnd, station}],
+    queryFn: getDataCount,
+    refetchOnWindowFocus: false
+  })
+
   if(isLoading) return <h2>Carregando...</h2>
   if(isError) return <h2>Ocorreu um erro ao realizar a requisição! Erro: {status}</h2>
   if (!data || data.length === 0) {
     return <h2>Nenhum dado encontrado para os filtros selecionados.</h2>;
   }
 
-  //const dados: DataGeral = data
-  /*const graph1 = {
-    x: data.map((dados: DataGeral) => {return dados.Date}),
-    y: data.map((dados: DataGeral) => {return dados.S4}),
-    mode: 'markers',
-    type: 'scatter',
-    marker: {color: data.map((dados: DataGeral) => {return dados.Svid})}
-  }*/
+  if(dataCount.isLoading) return <h2>Carregando grafico 2...</h2>
+  if(dataCount.isError) return <h2>Ocorreu um erro ao realizar a requisição do grafico 2</h2>
+  if(!dataCount.data || dataCount.data.length === 0) return <h2>Nenhum dado encontrado no grafico 2</h2>
+
   return (
     <div className='overflow-hidden'>
       {/*DIV DO HEADER*/}
@@ -94,7 +134,22 @@ function App() {
           className="w-full h-full"
         />
        </div>
-       <div className='border shadow-md p-1'>Gráfico 2</div>
+       <div className='border shadow-md p-1 w-full h-fit'>
+          <Plot
+            data={[
+              {
+                x: dataCount.data.map((dados: DataCount) => {return dados.Date}),
+                y: dataCount.data.map((dados: DataCount) => {return dados.S4_variance}),
+                mode: 'markers',
+                type: 'scatter',
+                marker: {color: data.map((dados: DataCount) => {return dados.S4_variance})}
+              }
+            ]}
+            layout={ {title: {text: 'Quantidade de satélites com S4 entre 0.3 e 0.6 - 2025-01-01 a 2025-01-02'}, autosize: true} }
+            useResizeHandler={true}
+            className="w-full h-full"
+          />
+       </div>
        <div className='border shadow-md p-1'>Gráfico 3</div>
        <div className='border shadow-md p-1'>Gráfico 4</div>
       </div>
