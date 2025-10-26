@@ -4,6 +4,7 @@ import axios from 'axios'
 import Plot from 'react-plotly.js'
 import imglogo from './assets/img/logo.png'
 import { useState } from 'react'
+import ScatterGeral from './components/graphs/ScatterGeral.tsx'
 
 interface dataParams {
   dateStart: string,
@@ -19,13 +20,6 @@ interface dataParamsFilter {
     dateStart: string,
   dateEnd: string,
   station: string
-}
-
-interface DataGeral {
-      Date: string,
-      Svid: number,
-      S4: string,
-      Elevation: number
 }
 
 interface DataCount {
@@ -55,6 +49,7 @@ async function getData(context: QueryFunctionContext<DataQueryKey>) {
 }
 
 async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_key, params] = context.queryKey
   const {elev, elevType, constellation, time, dateStart, dateEnd, station} = params;
   const response = await apiClient.get('/data/filters/contGraphs/', {
@@ -68,7 +63,7 @@ async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
       station: station
     }
   })
-
+  
   return response.data.data;
 }
 
@@ -119,20 +114,10 @@ function App() {
       {/*DIV DA AREA DOS DASHBOARDS*/}
       <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
        <div className='border shadow-md p-1 w-full h-fit'>
-        <Plot
-          data={[
-            {
-              x: data.map((dados: DataGeral) => {return dados.Date}),
-              y: data.map((dados: DataGeral) => {return dados.S4}),
-              mode: 'markers',
-              type: 'scatter',
-              marker: {color: data.map((dados: DataGeral) => {return dados.Svid})}
-            }
-          ]}
-          layout={ {title: {text: 'Índice S4 de Todas Constelações - 2025-01-01 a 2025-01-02'}, autosize: true} }
-          useResizeHandler={true}
-          className="w-full h-full"
-        />
+
+        {/*Gráfico geral do índice S4*/}
+        <ScatterGeral data={data} title='Índice S4 de Todas Constelações - 2025-01-01 a 2025-01-02'/>
+        
        </div>
        <div className='border shadow-md p-1 w-full h-fit'>
           <Plot
