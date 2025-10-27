@@ -24,7 +24,8 @@ interface dataParamsFilter {
 
 interface DataCount {
   Date: string,
-  S4_variance: number
+  S4_text: string,
+  Quantidade: number
 }
 
 type DataQueryKey = ['data', dataParams]
@@ -63,7 +64,7 @@ async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
       station: station
     }
   })
-  
+  console.log(response.data.data)
   return response.data.data;
 }
 
@@ -124,10 +125,10 @@ function App() {
             data={[
               {
                 x: dataCount.data.map((dados: DataCount) => {return dados.Date}),
-                y: dataCount.data.map((dados: DataCount) => {return dados.S4_variance}),
+                y: dataCount.data.map((dados: DataCount) => {return dados.Quantidade}),
                 mode: 'markers',
                 type: 'scatter',
-                marker: {color: data.map((dados: DataCount) => {return dados.S4_variance})}
+                marker: {color: data.map((dados: DataCount) => {return dados.Quantidade})}
               }
             ]}
             layout={ {title: {text: 'Quantidade de satélites com S4 entre 0.3 e 0.6 - 2025-01-01 a 2025-01-02'}, autosize: true} }
