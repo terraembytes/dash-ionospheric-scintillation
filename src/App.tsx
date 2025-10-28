@@ -37,7 +37,24 @@ function App() {
         <div>Análise do Índice S4</div>
         <div>Hello World</div>
       </div>
-      
+      {/*DIV DOS FILTROS INICIAIS*/}
+      <div>
+        <span>Filtros básicos</span>
+        {/*FILTROS BÁSICOS*/}
+        <div>
+          {/*INPUT DA DATA INICIAL*/}
+          <label htmlFor="inputDateStart">Data inicial: </label>
+          <input type='date' id='inputDateStart'/>
+          {/*INPUT DA DATA FINAL*/}
+          <label htmlFor="">Data Final: </label>
+          <input type="date" id='inputDateEnd'/>
+          {/*DROPDOWN COM AS ESTAÇÕES*/}
+          <label htmlFor="dropdownStation">Estação: </label>
+          <select name="dropdownStation" id="dropdownStation">
+            <option value="CTAS">CTAS</option>
+          </select>
+        </div>
+      </div>
       {/*DIV DA AREA DOS DASHBOARDS*/}
       <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
         <div className='border shadow-md p-1 w-full h-fit'>
