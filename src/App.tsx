@@ -1,66 +1,9 @@
 import './App.css'
-import { useQuery, type QueryFunctionContext } from '@tanstack/react-query'
-import axios from 'axios'
 import imglogo from './assets/img/logo.png'
 import { useState } from 'react'
 import ScatterGeral from './components/graphs/ScatterGeral.tsx'
 import CountS4Interval from './components/graphs/CountS4Interval.tsx'
-
-interface dataParams {
-  dateStart: string,
-  dateEnd: string,
-  station: string
-}
-
-interface dataParamsFilter {
-  elev: number,
-  elevType: number,
-  constellation: string,
-  time: string,
-  dateStart: string,
-  dateEnd: string,
-  station: string
-}
-
-type DataQueryKey = ['data', dataParams]
-type DataQueryKeyCount = ['dataCount', dataParamsFilter]
-
-const apiClient = axios.create({ baseURL: 'http://127.0.0.1:8000/api', })
-
-//Função para buscar os dados gerais da API
-async function getData(context: QueryFunctionContext<DataQueryKey>) {
-  const [_key, params] = context.queryKey
-  console.log(_key)
-  const { dateStart, dateEnd, station } = params;
-  const response = await apiClient.get('/data/', {
-    params: {
-      start: dateStart,
-      end: dateEnd,
-      station: station
-    }
-  })
-
-  return response.data.data;
-}
-
-async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_key, params] = context.queryKey
-  const { elev, elevType, constellation, time, dateStart, dateEnd, station } = params;
-  const response = await apiClient.get('/data/filters/contGraphs/', {
-    params: {
-      elev: elev,
-      elevType: elevType,
-      constellation: constellation,
-      time: time,
-      start: dateStart,
-      end: dateEnd,
-      station: station
-    }
-  })
-  console.log(response.data.data)
-  return response.data.data;
-}
+import { queryData, queryDataCount } from './conection/APIConection.ts'
 
 function App() {
   //states temporarios para fins de teste
@@ -71,21 +14,10 @@ function App() {
   const [elevType] = useState(1)
   const [constellation] = useState('ALL')
   const [time] = useState('1 minuto')
-  //recebendo os dados da API, bem como status de load e error
-  //usando queryKey para colocar um identificador na função getData
-  const { data, isLoading, isError, status } = useQuery({
-    queryKey: ['data', { dateStart, dateEnd, station }],
-    queryFn: getData,
-    refetchOnWindowFocus: false
-    //staleTime: 1000 * 60 * 5, // Considera os dados "frescos" por 5 minutos, evitando refetchs desnecessários.
-    //enabled: !!(dateStart && dateEnd && station) //garantir que todos os parametros estão preenchidos
-  })
 
-  const dataCount = useQuery({
-    queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
-    queryFn: getDataCount,
-    refetchOnWindowFocus: false
-  })
+  //recebendo os dados da API, bem como status de load e error
+  const { data, isLoading, isError, status } = queryData(dateStart, dateEnd, station)
+  const dataCount = queryDataCount(elev, elevType, constellation, time, dateStart, dateEnd, station)
 
   if (isLoading) return <h2>Carregando...</h2>
   if (isError) return <h2>Ocorreu um erro ao realizar a requisição! Erro: {status}</h2>
@@ -105,7 +37,7 @@ function App() {
         <div>Análise do Índice S4</div>
         <div>Hello World</div>
       </div>
-
+      
       {/*DIV DA AREA DOS DASHBOARDS*/}
       <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
         <div className='border shadow-md p-1 w-full h-fit'>
