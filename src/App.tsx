@@ -17,6 +17,7 @@ function App() {
   const [constellation] = useState('ALL')
   const [time] = useState('1 minuto')
 
+  //lista de graficos --> armazena a response das useQueries, cada uma em uma posição
   const graphs_list = new Array
   graphs_list.push(
     useQuery({
@@ -35,24 +36,11 @@ function App() {
     })
   )
 
+  //chama o useQuery de cada grafico na renderização inicial da página
   useEffect(() => {
     graphs_list[0].refetch()
     graphs_list[1].refetch()
   }, [graphs_list[0].refetch, graphs_list[1].refetch])
-
-  //recebendo os dados da API, bem como status de load e error
-  // const { data, isLoading, isError, status } = queryData(dateStart, dateEnd, station)
-  // const dataCount = queryDataCount(elev, elevType, constellation, time, dateStart, dateEnd, station)
-
-  // if (isLoading) return <h2>Carregando...</h2>
-  // if (isError) return <h2>Ocorreu um erro ao realizar a requisição! Erro: {status}</h2>
-  // if (!data || data.length === 0) {
-  //   return <h2>Nenhum dado encontrado para os filtros selecionados.</h2>;
-  // }
-
-  // if (dataCount.isLoading) return <h2>Carregando grafico 2...</h2>
-  // if (dataCount.isError) return <h2>Ocorreu um erro ao realizar a requisição do grafico 2</h2>
-  // if (!dataCount.data || dataCount.data.length === 0) return <h2>Nenhum dado encontrado no grafico 2</h2>
 
   //cada alteração feita nos inputs é atualizado nos states
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
