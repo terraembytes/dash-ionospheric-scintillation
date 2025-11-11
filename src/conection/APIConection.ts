@@ -31,7 +31,7 @@ export function queryDataCount(
 }
 
 //Função para buscar os dados gerais da API
-async function getData(context: QueryFunctionContext<DataQueryKey>) {
+export async function getData(context: QueryFunctionContext<DataQueryKey>) {
     const [_key, params] = context.queryKey
     console.log(_key)
     const { dateStart, dateEnd, station } = params;
@@ -46,7 +46,7 @@ async function getData(context: QueryFunctionContext<DataQueryKey>) {
     return response.data.data;
 }
 
-async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
+export async function getDataCount(context: QueryFunctionContext<DataQueryKeyCount>) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, params] = context.queryKey
     const { elev, elevType, constellation, time, dateStart, dateEnd, station } = params;

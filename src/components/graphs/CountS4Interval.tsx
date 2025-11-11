@@ -2,11 +2,11 @@ import Plot from 'react-plotly.js'
 import type { DataCount } from '../../models/DataCount'
 
 interface Props {
-    data: [],
+    data: DataCount[],
     title: string
 }
 
-function CountS4Interval({data, title}: Props) {
+function CountS4Interval({data = [], title}: Props) {
     return (
         <Plot
             data={[
