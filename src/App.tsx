@@ -17,30 +17,26 @@ function App() {
   const [constellation] = useState('ALL')
   const [time] = useState('1 minuto')
 
-  //lista de graficos --> armazena a response das useQueries, cada uma em uma posição
-  const graphs_list = new Array
-  graphs_list.push(
-    useQuery({
+  //constantes com os dados retornados de cada gráfico
+  const graphGeral = useQuery({ //grafico geral
       queryKey: ['data', { dateStart, dateEnd, station }],
       queryFn: getData,
       refetchOnWindowFocus: false,
       enabled: false //impede que ele execute de primeira
     })
-  )
 
-  graphs_list.push(
-    useQuery({
+  const graphCountS4 = useQuery({ //grafico da quantidade de satelites com indice S4 entre até 0.3 e até 0.6
       queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
       queryFn: getDataCount,
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      enabled: false
     })
-  )
 
   //chama o useQuery de cada grafico na renderização inicial da página
   useEffect(() => {
-    graphs_list[0].refetch()
-    graphs_list[1].refetch()
-  }, [graphs_list[0].refetch, graphs_list[1].refetch])
+    graphGeral.refetch()
+    graphCountS4.refetch()
+  }, [graphGeral.refetch, graphCountS4.refetch])
 
   //cada alteração feita nos inputs é atualizado nos states
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
@@ -48,7 +44,9 @@ function App() {
   const dateEndChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateEnd(e.target.value)
 
   //função para realizar a pesquisa dos dados brutos
-  function pesquisarDados() {
+  function pesquisarDados(e: React.FormEvent<HTMLFormElement>) {
+    //impede que a pagina recarregue, barrando a funcionalidade padrão do form submit
+    e.preventDefault()
 
     if (verifyString(dateStart)) {
       alert("Campo data inicial incorreto!")
@@ -68,8 +66,8 @@ function App() {
       return
     }
 
-    graphs_list[0].refetch()
-    graphs_list[1].refetch()
+    graphGeral.refetch()
+    graphCountS4.refetch()
   }
 
   return (
@@ -84,7 +82,7 @@ function App() {
       <div className='titles-css p-2 rounded-2xl shadow-lg mt-6 text-amber-50'>
         <span className='font-bold'>Filtros básicos</span>
         {/*FILTROS BÁSICOS*/}
-        <form onSubmit={pesquisarDados}>
+        <form onSubmit={pesquisarDados} id='form-basic-filters'>
           <div className='p-2 flex flex-row gap-5'>
             {/*INPUT DA DATA INICIAL*/}
             <div className='border-2 p-1 rounded-md'>
@@ -119,11 +117,15 @@ function App() {
       <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
         <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico geral do índice S4*/}
-          <ScatterGeral data={graphs_list[0].data} title='Índice S4 de Todas Constelações - 2025-01-01 a 2025-01-02' />
+          {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
+          :(<p>Carregando gráfico ...</p>)
+          }
         </div>
         <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
-          <CountS4Interval data={graphs_list[1].data} title='Quantidade de satélites com S4 entre 0.3 e 0.6 - 2025-01-01 a 2025-01-02' />
+          {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
+          : (<p>Carregando gráfico ...</p>)
+        } 
         </div>
         <div className='border shadow-md p-1'>Gráfico 3</div>
         <div className='border shadow-md p-1'>Gráfico 4</div>
