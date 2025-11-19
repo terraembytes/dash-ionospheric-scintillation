@@ -76,7 +76,7 @@ function App() {
       <div className='flex justify-between items-center p-2 titles-css text-amber-50 rounded-2xl shadow-lg'>
         <div><img src={imglogo} alt="logo do projeto" width={110} height={100} /></div>
         <div>Análise do Índice S4</div>
-        <div>Hello World</div>
+        <div>Resumo</div>
       </div>
       {/*DIV DOS FILTROS INICIAIS*/}
       <div className='titles-css p-2 rounded-2xl shadow-lg mt-6 text-amber-50'>
