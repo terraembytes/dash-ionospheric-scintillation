@@ -1,11 +1,12 @@
 import axios from "axios"
-import type { DataParams } from "../models/DataParams"
+import type { DataParamsFilterCut } from "../models/DataParamsFilterCut"
 import type { DataParamsFilter } from "../models/DataParamsFilter"
 import { type QueryFunctionContext } from "@tanstack/react-query"
 
 
-type DataQueryKey = ['data', DataParams]
+type DataQueryKey = ['data', DataParamsFilterCut]
 type DataQueryKeyCount = ['dataCount', DataParamsFilter]
+type DataQueryKeySkyplot= ['dataSkyplot', DataParamsFilterCut]
 
 const apiClient = axios.create({ baseURL: 'http://127.0.0.1:8000/api', })
 
@@ -13,12 +14,39 @@ const apiClient = axios.create({ baseURL: 'http://127.0.0.1:8000/api', })
 export async function getData(context: QueryFunctionContext<DataQueryKey>) {
     const [_key, params] = context.queryKey
     console.log(_key)
-    const { dateStart, dateEnd, station } = params;
-    const response = await apiClient.get('/data/', {
+    const { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed } = params;
+    const response = await apiClient.get('/v1/data/', {
         params: {
+            elev: elev,
+            elevType: elevType,
+            constellation: constellation,
+            time: time,
             start: dateStart,
             end: dateEnd,
-            station: station
+            station: station,
+            hourRange: hourRange,
+            dateSelected: dateChoosed
+        }
+    })
+
+    return response.data.data;
+}
+
+export async function getDataSkyplot(context: QueryFunctionContext<DataQueryKey>) {
+    const [_key, params] = context.queryKey
+    console.log(_key)
+    const { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed } = params;
+    const response = await apiClient.get('/v1/data/', {
+        params: {
+            elev: elev,
+            elevType: elevType,
+            constellation: constellation,
+            time: time,
+            start: dateStart,
+            end: dateEnd,
+            station: station,
+            hourRange: hourRange,
+            dateSelected: dateChoosed
         }
     })
 
@@ -30,7 +58,7 @@ export async function getDataCount(context: QueryFunctionContext<DataQueryKeyCou
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, params] = context.queryKey
     const { elev, elevType, constellation, time, dateStart, dateEnd, station } = params;
-    const response = await apiClient.get('/data/filters/contGraphs/', {
+    const response = await apiClient.get('/v1/data/contGraphs/', {
         params: {
             elev: elev,
             elevType: elevType,
@@ -43,4 +71,3 @@ export async function getDataCount(context: QueryFunctionContext<DataQueryKeyCou
     })
     return response.data.data;
 }
-

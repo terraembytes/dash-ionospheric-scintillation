@@ -3,9 +3,10 @@ import imglogo from './assets/img/logo.png'
 import React, { useEffect, useState } from 'react'
 import ScatterGeral from './components/graphs/ScatterGeral.tsx'
 import CountS4Interval from './components/graphs/CountS4Interval.tsx'
-import { getData, getDataCount } from './conection/APIConection.ts'
 import { verifyString } from './utils/basicFunctions.ts'
 import { useQuery } from '@tanstack/react-query'
+import SkyplotConstellation from './components/graphs/SkyplotConstellation.tsx'
+import { getData, getDataCount, getDataSkyplot } from './conection/APIConection.ts'
 
 function App() {
   //states temporarios para fins de teste
@@ -14,12 +15,14 @@ function App() {
   const [station, setStation] = useState('CTAS');
   const [elev] = useState(0)
   const [elevType] = useState(1)
-  const [constellation] = useState('ALL')
+  const [constellation] = useState('GPS')
   const [time] = useState('1 minuto')
+  const [hourRange]  = useState(1)
+  const [dateChoosed] = useState('2025-01-01 10:00:00')
 
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
-      queryKey: ['data', { dateStart, dateEnd, station }],
+      queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange: null, dateChoosed: null }],
       queryFn: getData,
       refetchOnWindowFocus: false,
       enabled: false //impede que ele execute de primeira
@@ -32,11 +35,19 @@ function App() {
       enabled: false
     })
 
+  const graphSkyplot = useQuery({
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed }],
+      queryFn: getDataSkyplot,
+      refetchOnWindowFocus: false,
+      enabled: false //impede que ele execute de primeira
+  })
+
   //chama o useQuery de cada grafico na renderização inicial da página
   useEffect(() => {
     graphGeral.refetch()
     graphCountS4.refetch()
-  }, [graphGeral.refetch, graphCountS4.refetch])
+    graphSkyplot.refetch()
+  }, [graphGeral.refetch, graphCountS4.refetch, graphSkyplot.refetch])
 
   //cada alteração feita nos inputs é atualizado nos states
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
@@ -68,6 +79,7 @@ function App() {
 
     graphGeral.refetch()
     graphCountS4.refetch()
+    graphSkyplot.refetch()
   }
 
   return (
@@ -127,7 +139,12 @@ function App() {
           : (<p>Carregando gráfico ...</p>)
         } 
         </div>
-        <div className='border shadow-md p-1'>Gráfico 3</div>
+        <div className='border shadow-md p-1 w-full h-fit'>
+          {/*Gráfico Skyplot teste*/}
+          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} title={`Skyplot Teste - ${constellation}`}/>)
+          : (<p>Carregando gráfico ...</p>)
+          }
+        </div>
         <div className='border shadow-md p-1'>Gráfico 4</div>
       </div>
     </div>
