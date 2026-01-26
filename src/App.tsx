@@ -141,7 +141,7 @@ function App() {
         </div>
         <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico Skyplot teste*/}
-          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} title={`Skyplot Teste - ${constellation}`}/>)
+          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`}/>)
           : (<p>Carregando gráfico ...</p>)
           }
         </div>
