@@ -36,7 +36,7 @@ export async function getDataSkyplot(context: QueryFunctionContext<DataQueryKey>
     const [_key, params] = context.queryKey
     console.log(_key)
     const { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed } = params;
-    const response = await apiClient.get('/v1/data/', {
+    const response = await apiClient.get('/v1/data/skyplot-polygon/', {
         params: {
             elev: elev,
             elevType: elevType,
