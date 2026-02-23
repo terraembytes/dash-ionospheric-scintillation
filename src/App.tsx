@@ -17,29 +17,29 @@ function App() {
   const [elevType] = useState(1)
   const [constellation] = useState('GPS')
   const [time] = useState('1 minuto')
-  const [hourRange]  = useState(1)
+  const [hourRange] = useState(1)
   const [dateChoosed] = useState('2024-11-11 23:30:00')
 
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
-      queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange: null, dateChoosed: null }],
-      queryFn: getData,
-      refetchOnWindowFocus: false,
-      enabled: false //impede que ele execute de primeira
-    })
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange: null, dateChoosed: null }],
+    queryFn: getData,
+    refetchOnWindowFocus: false,
+    enabled: false //impede que ele execute de primeira
+  })
 
   const graphCountS4 = useQuery({ //grafico da quantidade de satelites com indice S4 entre até 0.3 e até 0.6
-      queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
-      queryFn: getDataCount,
-      refetchOnWindowFocus: false,
-      enabled: false
-    })
+    queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
+    queryFn: getDataCount,
+    refetchOnWindowFocus: false,
+    enabled: false
+  })
 
   const graphSkyplot = useQuery({
     queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed }],
-      queryFn: getDataSkyplot,
-      refetchOnWindowFocus: false,
-      enabled: false //impede que ele execute de primeira
+    queryFn: getDataSkyplot,
+    refetchOnWindowFocus: false,
+    enabled: false //impede que ele execute de primeira
   })
 
   //chama o useQuery de cada grafico na renderização inicial da página
@@ -130,19 +130,62 @@ function App() {
         <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico geral do índice S4*/}
           {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
-          :(<p>Carregando gráfico ...</p>)
+            : (<p>Carregando gráfico ...</p>)
+          }
+        </div>
+        <div className='border shadow-md p-1 w-full h-fit bg-gray-200'>
+          {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
+          <div className='pb-3 pt-1 flex gap-3'>
+            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
+              {/*Dropdown para a escala de tempo do grafico countS4 */}
+              <label htmlFor="dropdownTimeScale" className='font-bold'>Escala de Tempo: </label>
+              <select name="dropdownTimeScale" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                <option value="1 minuto">1 minuto</option>
+                <option value="5 minutos">5 minutos</option>
+                <option value="10 minutos">10 minutos</option>
+                <option value="30 minutos">30 minutos</option>
+                <option value="1 hora">1 hora</option>
+                <option value="2 horas">2 horas</option>
+                <option value="3 horas">3 horas</option>
+                <option value="4 horas">4 horas</option>
+              </select>
+            </div>
+            {/*conjunto de filtros para a elevacao */}
+            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+              <label htmlFor="" className='font-bold'>Elevação </label>
+              <select name="dropdownElevationType" id="" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                <option value=""> maior que </option>
+                <option value=""> menor que </option>
+                <option value=""> igual a </option>
+                <option value=""> maior ou igual a </option>
+                <option value=""> menor ou igual a </option>
+              </select>
+              <input type="number" name="" id="" min={0} max={2} step={0.1} className='w-15 '/>
+            </div>
+            {/*Filtro da constelacao do grafico countS4 */}
+            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+              <label htmlFor="" className='font-bold'>Constelação: </label>
+              <select name="dropdownElevationType" id="" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                <option value="">Todas</option>
+                <option value="">GPS</option>
+                <option value="">GLONASS</option>
+                <option value="">GALILEO</option>
+                <option value="">BEIDOU</option>
+              </select>
+            </div>
+            <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+              FILTRAR
+            </button>
+          </div>
+          <hr />
+          {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
+            : (<p>Carregando gráfico ...</p>)
           }
         </div>
         <div className='border shadow-md p-1 w-full h-fit'>
-          {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
-          {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
-          : (<p>Carregando gráfico ...</p>)
-        } 
-        </div>
-        <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico Skyplot teste*/}
-          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`}/>)
-          : (<p>Carregando gráfico ...</p>)
+          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`} />)
+            : (<p>Carregando gráfico ...</p>)
           }
         </div>
         <div className='border shadow-md p-1'>Gráfico 4</div>
