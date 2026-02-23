@@ -1,38 +1,16 @@
 import Plot from 'react-plotly.js'
 import type { DataSkyplot } from '../../models/DataSkyplot'
 
-interface SkyplotPolygon {
-  polygons: [],
-  points: [],
+interface SkyplotS4Size extends DataSkyplot{
+  sizePlot: string
 }
 
 interface Props {
-  data: DataSkyplot[],
-  polygons: SkyplotPolygon
+  data: SkyplotS4Size[],
   titles: string
 }
 
-function SkyplotConstellation({ data = [], polygons, titles }: Props) {
-  const list_x = polygons.points.map((x) => {
-      return x[0]
-  })
-
-  const list_y = polygons.points.map((y) => {
-    return y[1]
-  })
-
-  //construindo a trace dos poligonos
-  const polygonTrace: Plotly.Data = {
-    x: list_x,
-    y: list_y,
-    mode: 'lines',
-    fill: 'toself',
-    type: 'scatter',
-    fillcolor: 'rgba(255, 0, 0, 0.2)', // Semi-transparent red
-    line: { color: 'red' },
-    //hoveron: 'points+fills' // Show hover info on the shape itself
-  }
-
+function SkyplotConstellation({ data = [], titles }: Props) {
   return (
     <Plot
       data={[
@@ -53,7 +31,8 @@ function SkyplotConstellation({ data = [], polygons, titles }: Props) {
           'S4: %{marker.color:.3f}<br>',
           marker: { 
             color: data.map(p => p.S4),
-            size: 10,
+            opacity: data.map(p => Number(p.S4)),
+            size: data.map(p => Number(p.sizePlot)),
             colorscale: 'Jet',
             cmin: 0,
             cmax: 1.2,
@@ -66,7 +45,6 @@ function SkyplotConstellation({ data = [], polygons, titles }: Props) {
             //line: { width: 1, color: '#ffffff' }
           }
         },
-        polygonTrace
       ]}
       layout={{ 
         title: { text: titles }, 

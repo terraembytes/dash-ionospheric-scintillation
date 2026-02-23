@@ -6,7 +6,6 @@ import { type QueryFunctionContext } from "@tanstack/react-query"
 
 type DataQueryKey = ['data', DataParamsFilterCut]
 type DataQueryKeyCount = ['dataCount', DataParamsFilter]
-type DataQueryKeySkyplot= ['dataSkyplot', DataParamsFilterCut]
 
 const apiClient = axios.create({ baseURL: 'http://127.0.0.1:8000/api', })
 
@@ -36,7 +35,7 @@ export async function getDataSkyplot(context: QueryFunctionContext<DataQueryKey>
     const [_key, params] = context.queryKey
     console.log(_key)
     const { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed } = params;
-    const response = await apiClient.get('/v1/data/skyplot-polygon/', {
+    const response = await apiClient.get('/v1/data/skyplotS4/', {
         params: {
             elev: elev,
             elevType: elevType,

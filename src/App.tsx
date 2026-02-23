@@ -10,15 +10,15 @@ import { getData, getDataCount, getDataSkyplot } from './conection/APIConection.
 
 function App() {
   //states temporarios para fins de teste
-  const [dateStart, setDateStart] = useState('2025-01-01');
-  const [dateEnd, setDateEnd] = useState('2025-01-02');
+  const [dateStart, setDateStart] = useState('2024-11-11');
+  const [dateEnd, setDateEnd] = useState('2024-11-12');
   const [station, setStation] = useState('CTAS');
   const [elev] = useState(0)
   const [elevType] = useState(1)
   const [constellation] = useState('GPS')
   const [time] = useState('1 minuto')
   const [hourRange]  = useState(1)
-  const [dateChoosed] = useState('2025-01-01 10:00:00')
+  const [dateChoosed] = useState('2024-11-11 23:30:00')
 
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
