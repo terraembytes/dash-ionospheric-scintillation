@@ -204,10 +204,29 @@ function App() {
             }
           </div>
         </div>
+        {/*Divs relacionadas ao grafico Skyplot S4 */}
         <div className='p-1 w-full h-fit'>
           {/*Filtros do grafico skyplot S4 */}
           <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
-            Hello World
+            {/*Filtro da constelacao do grafico Skyplot S4 */}
+            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+              <label htmlFor="dropdownConstellationCountS4" className='font-bold'>Constelação: </label>
+              <select name="dropdownElevationType" id="dropdownConstellationCountS4" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                <option value="">GPS</option>
+                <option value="">GLONASS</option>
+                <option value="">GALILEO</option>
+                <option value="">BEIDOU</option>
+              </select>
+            </div>
+            {/*Input hora desejada do grafico skyplot S4*/}
+            <div className='border-2 p-1 rounded-md titles-css text-amber-50'>
+              <label htmlFor="inputTimeskyplotS4" className='font-bold'>Hora Desejada: </label>
+              <input type='time' id='inputTimeSkyplotS4' step={1} min={0} className='cursor-pointer'/>
+            </div>
+            {/*Botao de submit dos filtros */}
+            <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+              FILTRAR
+            </button>
           </div>
           <hr />
           {/*Gráfico Skyplot teste*/}
