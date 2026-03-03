@@ -90,49 +90,69 @@ function App() {
         <div>Análise do Índice S4</div>
         <div>Hello World</div>
       </div>
-      {/*DIV DOS FILTROS INICIAIS*/}
-      <div className='titles-css p-2 rounded-2xl shadow-lg mt-6 text-amber-50'>
-        <span className='font-bold'>Filtros básicos</span>
-        {/*FILTROS BÁSICOS*/}
-        <form onSubmit={pesquisarDados} id='form-basic-filters'>
-          <div className='p-2 flex flex-row gap-5'>
-            {/*INPUT DA DATA INICIAL*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="inputDateStart" className='font-bold'>Data inicial: </label>
-              <input type='date' id='inputDateStart' value={dateStart} onChange={dateStartChange} />
+
+      <div className='grid grid-flow-col grid-rows-2 gap-4'>
+        {/*DIV DOS FILTROS INICIAIS*/}
+        <div className='titles-css p-2 rounded-2xl shadow-lg mt-5 text-amber-50 row-span-15'>
+          <span className='font-bold'>Filtros básicos</span>
+          {/*FILTROS BÁSICOS*/}
+          <form onSubmit={pesquisarDados} id='form-basic-filters'>
+            <div className='p-2 grid grid-flow-col grid-rows-4 gap-4'>
+              {/*INPUT DA DATA INICIAL*/}
+              <div className='border-2 p-1 rounded-md'>
+                <label htmlFor="inputDateStart" className='font-bold'>Data inicial: </label>
+                <input type='date' id='inputDateStart' value={dateStart} onChange={dateStartChange} />
+              </div>
+              {/*INPUT DA DATA FINAL*/}
+              <div className='border-2 p-1 rounded-md'>
+                <label htmlFor="inputDateEnd" className='font-bold'>Data Final: </label>
+                <input type="date" id='inputDateEnd' value={dateEnd} onChange={dateEndChange} />
+              </div>
+              {/*DROPDOWN COM AS ESTAÇÕES*/}
+              <div className='border-2 p-1 rounded-md'>
+                <label htmlFor="dropdownStation" className='font-bold'>Estação: </label>
+                <select name="dropdownStation" id="dropdownStation" value={station} onChange={stationChange}>
+                  <option value="CTAS">CTAS</option>
+                  <option value="CTAS">Teste 1</option>
+                  <option value="CTAS">Teste 2</option>
+                </select>
+              </div>
+              {/*BOTÃO PARA EXECUTAR OS FILTROS BÁSICOS*/}
+              <button
+                className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'
+                type='submit'>
+                PESQUISAR
+              </button>
             </div>
-            {/*INPUT DA DATA FINAL*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="inputDateEnd" className='font-bold'>Data Final: </label>
-              <input type="date" id='inputDateEnd' value={dateEnd} onChange={dateEndChange} />
+          </form>
+        </div>
+        <div className='col-span-12 mt-5 grid grid-cols-3 gap-2 h-60'>
+          <div className='flex justify-center items-center rounded-2xl shadow-2xl bg-amber-100 border-2 border-amber-100'>
+            <div className='grid grid-rows-2 text-center gap-5 text-4xl'>
+              <span>Satélites com forte cintilação</span>
+              <span className='mt-6'>25</span>
             </div>
-            {/*DROPDOWN COM AS ESTAÇÕES*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="dropdownStation" className='font-bold'>Estação: </label>
-              <select name="dropdownStation" id="dropdownStation" value={station} onChange={stationChange}>
-                <option value="CTAS">CTAS</option>
-                <option value="CTAS">Teste 1</option>
-                <option value="CTAS">Teste 2</option>
-              </select>
-            </div>
-            {/*BOTÃO PARA EXECUTAR OS FILTROS BÁSICOS*/}
-            <button
-              className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'
-              type='submit'
-            >
-              PESQUISAR
-            </button>
           </div>
-        </form>
+          <div className='flex justify-center items-center rounded-2xl border-amber-100 border-2 shadow-2xl bg-amber-100'>
+            Hello World
+          </div>
+          <div className='flex justify-center items-center rounded-2xl border-amber-100 border-2 shadow-2xl bg-amber-100'>
+            Hello World
+          </div>
+        </div>
+        <div className='col-span-12 row-span-14'>
+          <div className='bg-[#847c74] shadow-2xl h-full w-full overflow-hidden flex justify-center items-center rounded-2xl border-[#847c74]'>
+            {/*Gráfico geral do índice S4*/}
+            {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
+        </div>
       </div>
+
       {/*DIV DA AREA DOS DASHBOARDS*/}
       <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
-        <div className='border shadow-md p-1 w-full h-fit'>
-          {/*Gráfico geral do índice S4*/}
-          {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
-            : (<p>Carregando gráfico ...</p>)
-          }
-        </div>
+
         <div className='border shadow-md p-1 w-full h-fit bg-gray-200'>
           {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
           <div className='pb-3 pt-1 flex gap-3'>
@@ -160,7 +180,7 @@ function App() {
                 <option value=""> maior ou igual a </option>
                 <option value=""> menor ou igual a </option>
               </select>
-              <input type="number" name="" id="" min={0} max={2} step={0.1} className='w-15 '/>
+              <input type="number" name="" id="" min={0} max={2} step={0.1} className='w-15 ' />
             </div>
             {/*Filtro da constelacao do grafico countS4 */}
             <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
