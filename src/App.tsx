@@ -153,7 +153,7 @@ function App() {
       {/*DIV DA AREA DOS DASHBOARDS*/}
       <div className='w-full h-full mt-3 rounded-2xl shadow-lg grid grid-cols-2 gap-4'>
         {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
-        <div className='shadow-md p-1 w-full h-full'>
+        <div className='p-1 w-full h-fit rounded-2xl'>
           {/*Filtros do grafico countS4 */}
           <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
             <div className='p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
@@ -198,17 +198,24 @@ function App() {
             </button>
           </div>
           <hr />
-          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden'>
+          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
             {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
               : (<p>Carregando gráfico ...</p>)
             }
           </div>
         </div>
-        <div className='border shadow-md p-1 w-full h-fit'>
+        <div className='p-1 w-full h-fit'>
+          {/*Filtros do grafico skyplot S4 */}
+          <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+            Hello World
+          </div>
+          <hr />
           {/*Gráfico Skyplot teste*/}
-          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`} />)
-            : (<p>Carregando gráfico ...</p>)
-          }
+          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
+            {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
         </div>
       </div>
     </div>
