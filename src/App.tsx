@@ -151,12 +151,12 @@ function App() {
       </div>
 
       {/*DIV DA AREA DOS DASHBOARDS*/}
-      <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
-
-        <div className='border shadow-md p-1 w-full h-fit bg-gray-200'>
-          {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
-          <div className='pb-3 pt-1 flex gap-3'>
-            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
+      <div className='w-full h-full mt-3 rounded-2xl shadow-lg grid grid-cols-2 gap-4'>
+        {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
+        <div className='shadow-md p-1 w-full h-full'>
+          {/*Filtros do grafico countS4 */}
+          <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+            <div className='p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
               {/*Dropdown para a escala de tempo do grafico countS4 */}
               <label htmlFor="dropdownTimeScale" className='font-bold'>Escala de Tempo: </label>
               <select name="dropdownTimeScale" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
@@ -198,9 +198,11 @@ function App() {
             </button>
           </div>
           <hr />
-          {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
-            : (<p>Carregando gráfico ...</p>)
-          }
+          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden'>
+            {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
         </div>
         <div className='border shadow-md p-1 w-full h-fit'>
           {/*Gráfico Skyplot teste*/}
@@ -208,7 +210,6 @@ function App() {
             : (<p>Carregando gráfico ...</p>)
           }
         </div>
-        <div className='border shadow-md p-1'>Gráfico 4</div>
       </div>
     </div>
   )
