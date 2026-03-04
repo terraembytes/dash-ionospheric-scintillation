@@ -87,8 +87,8 @@ function App() {
       {/*DIV DO HEADER*/}
       <div className='flex justify-between items-center p-2 titles-css text-amber-50 rounded-2xl shadow-lg'>
         <div><img src={imglogo} alt="logo do projeto" width={110} height={100} /></div>
-        <div>Análise do Índice S4</div>
-        <div>Hello World</div>
+        <div className='font-extrabold text-4xl'>Análise do Índice S4</div>
+        <div>Resumo</div>
       </div>
 
       <div className='grid grid-flow-col grid-rows-2 gap-4'>
