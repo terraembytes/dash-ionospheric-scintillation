@@ -126,18 +126,31 @@ function App() {
             </div>
           </form>
         </div>
+        {/*Div dos blocos */}
         <div className='col-span-12 mt-5 grid grid-cols-3 gap-2 h-60'>
-          <div className='flex justify-center items-center rounded-2xl shadow-2xl bg-amber-100 border-2 border-amber-100'>
-            <div className='grid grid-rows-2 text-center gap-5 text-4xl'>
-              <span>Satélites com forte cintilação</span>
-              <span className='mt-6'>25</span>
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl titles-css p-1 flex justify-center items-center text-amber-50'>
+              <span className='text-center text-4xl'>Satélites com forte cintilação</span>
+            </div>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>25</span>
             </div>
           </div>
-          <div className='flex justify-center items-center rounded-2xl border-amber-100 border-2 shadow-2xl bg-amber-100'>
-            Hello World
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl p-1 flex justify-center items-center titles-css text-amber-50'>
+              <span className='text-center text-4xl'>Constelação</span>
+            </div>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>GPS</span>
+            </div>
           </div>
-          <div className='flex justify-center items-center rounded-2xl border-amber-100 border-2 shadow-2xl bg-amber-100'>
-            Hello World
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl p-1 flex justify-center items-center titles-css text-amber-50'>
+              <span className='text-center text-4xl'>Horário</span>
+            </div>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>02:30:45</span>
+            </div>
           </div>
         </div>
         <div className='col-span-12 row-span-14'>
@@ -221,7 +234,7 @@ function App() {
             {/*Input hora desejada do grafico skyplot S4*/}
             <div className='border-2 p-1 rounded-md titles-css text-amber-50'>
               <label htmlFor="inputTimeskyplotS4" className='font-bold'>Hora Desejada: </label>
-              <input type='time' id='inputTimeSkyplotS4' step={1} min={0} className='cursor-pointer'/>
+              <input type='time' id='inputTimeSkyplotS4' step={1} min={0} className='cursor-pointer' />
             </div>
             {/*Botao de submit dos filtros */}
             <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
