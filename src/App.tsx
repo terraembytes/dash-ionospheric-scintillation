@@ -1,6 +1,6 @@
 import './App.css'
 import imglogo from './assets/img/logo.png'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import ScatterGeral from './components/graphs/ScatterGeral.tsx'
 import CountS4Interval from './components/graphs/CountS4Interval.tsx'
 import { verifyString } from './utils/basicFunctions.ts'
@@ -20,34 +20,38 @@ function App() {
   const [hourRange] = useState(1)
   const [dateChoosed] = useState('2024-11-11 23:30:00')
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    dateStart: '2024-11-11',
+    dateEnd: '2024-11-12',
+    station: 'CTAS'
+  })
+
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
-    queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange: null, dateChoosed: null }],
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange: null, dateChoosed: null }],
     queryFn: getData,
-    refetchOnWindowFocus: false,
-    enabled: false //impede que ele execute de primeira
+    refetchOnWindowFocus: false
   })
 
   const graphCountS4 = useQuery({ //grafico da quantidade de satelites com indice S4 entre até 0.3 e até 0.6
-    queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
+    queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station }],
     queryFn: getDataCount,
     refetchOnWindowFocus: false,
-    enabled: false
   })
 
   const graphSkyplot = useQuery({
-    queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed }],
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange, dateChoosed }],
     queryFn: getDataSkyplot,
     refetchOnWindowFocus: false,
-    enabled: false //impede que ele execute de primeira
+    // enabled: false //impede que ele execute de primeira
   })
 
   //chama o useQuery de cada grafico na renderização inicial da página
-  useEffect(() => {
-    graphGeral.refetch()
-    graphCountS4.refetch()
-    graphSkyplot.refetch()
-  }, [graphGeral.refetch, graphCountS4.refetch, graphSkyplot.refetch])
+  // useEffect(() => {
+  //   graphGeral.refetch()
+  //   graphCountS4.refetch()
+  //   graphSkyplot.refetch()
+  // }, [graphGeral.refetch, graphCountS4.refetch, graphSkyplot.refetch])
 
   //cada alteração feita nos inputs é atualizado nos states
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
@@ -77,9 +81,11 @@ function App() {
       return
     }
 
-    graphGeral.refetch()
-    graphCountS4.refetch()
-    graphSkyplot.refetch()
+    setAppliedFilters({ dateStart, dateEnd, station })
+
+    // graphGeral.refetch()
+    // graphCountS4.refetch()
+    // graphSkyplot.refetch()
   }
 
   return (
@@ -156,7 +162,7 @@ function App() {
         <div className='col-span-12 row-span-14'>
           <div className='bg-[#847c74] shadow-2xl h-full w-full overflow-hidden flex justify-center items-center rounded-2xl border-[#847c74]'>
             {/*Gráfico geral do índice S4*/}
-            {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
+            {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${appliedFilters.dateStart} a ${appliedFilters.dateEnd}`} />)
               : (<p>Carregando gráfico ...</p>)
             }
           </div>
@@ -212,7 +218,7 @@ function App() {
           </div>
           <hr />
           <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
-            {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
+            {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${appliedFilters.dateStart} a ${appliedFilters.dateEnd}`} />)
               : (<p>Carregando gráfico ...</p>)
             }
           </div>
