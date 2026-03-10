@@ -103,21 +103,21 @@ function App() {
           <span className='font-bold'>Filtros básicos</span>
           {/*FILTROS BÁSICOS*/}
           <form onSubmit={pesquisarDados} id='form-basic-filters'>
-            <div className='p-2 grid grid-flow-col grid-rows-4 gap-4'>
+            <div className='p-2 grid grid-flow-col grid-rows-4 gap-4 w-full'>
               {/*INPUT DA DATA INICIAL*/}
-              <div className='border-2 p-1 rounded-md'>
-                <label htmlFor="inputDateStart" className='font-bold'>Data inicial: </label>
-                <input type='date' id='inputDateStart' value={dateStart} onChange={dateStartChange} />
+              <div className='border-2 p-1 rounded-md flex items-center'>
+                <label htmlFor="inputDateStart" className='font-bold whitespace-nowrap'>Data inicial: </label>
+                <input type='date' id='inputDateStart' value={dateStart} className='cursor-pointer' onChange={dateStartChange} />
               </div>
               {/*INPUT DA DATA FINAL*/}
-              <div className='border-2 p-1 rounded-md'>
-                <label htmlFor="inputDateEnd" className='font-bold'>Data Final: </label>
-                <input type="date" id='inputDateEnd' value={dateEnd} onChange={dateEndChange} />
+              <div className='border-2 p-1 rounded-md flex items-center'>
+                <label htmlFor="inputDateEnd" className='font-bold whitespace-nowrap'>Data Final: </label>
+                <input type="date" id='inputDateEnd' value={dateEnd} className='cursor-pointer' onChange={dateEndChange} />
               </div>
               {/*DROPDOWN COM AS ESTAÇÕES*/}
-              <div className='border-2 p-1 rounded-md'>
-                <label htmlFor="dropdownStation" className='font-bold'>Estação: </label>
-                <select name="dropdownStation" id="dropdownStation" value={station} onChange={stationChange}>
+              <div className='border-2 p-1 rounded-md flex items-center gap-2'>
+                <label htmlFor="dropdownStation" className='font-bold whitespace-nowrap'>Estação: </label>
+                <select name="dropdownStation" id="dropdownStation" value={station} className='cursor-pointer' onChange={stationChange}>
                   <option value="CTAS">CTAS</option>
                   <option value="CTAS">Teste 1</option>
                   <option value="CTAS">Teste 2</option>
