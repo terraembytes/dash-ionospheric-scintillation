@@ -3,6 +3,7 @@ import type { DataSkyplot } from '../../models/DataSkyplot'
 
 interface SkyplotS4Size extends DataSkyplot{
   sizePlot: string
+  alphaPlot: string
 }
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 }
 
 function SkyplotConstellation({ data = [], titles }: Props) {
+
   return (
     <Plot
       data={[
@@ -19,7 +21,7 @@ function SkyplotConstellation({ data = [], titles }: Props) {
           type: 'scatterpolar',
           r: data.map(p => Number(p.Elevation)),
           theta: data.map(p => Number(p.Azimute)),
-          //text: textSvid,
+          text: data.map(p => p.Svid.toString()),
           textposition: 'middle left',
           textfont: { size: 11, color: '#000000' },
           cliponaxis: false,
@@ -31,7 +33,7 @@ function SkyplotConstellation({ data = [], titles }: Props) {
           'S4: %{marker.color:.3f}<br>',
           marker: { 
             color: data.map(p => p.S4),
-            opacity: data.map(p => Number(p.S4)),
+            opacity: data.map(p => Number(p.alphaPlot)),
             size: data.map(p => Number(p.sizePlot)),
             colorscale: 'Jet',
             cmin: 0,
@@ -41,8 +43,8 @@ function SkyplotConstellation({ data = [], titles }: Props) {
               tickvals: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2],
               ticktext: ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0', '1.2'],
               x: 1
-            }
-            //line: { width: 1, color: '#ffffff' }
+            },
+            line: { width: 1, color: '#ffffff' }
           }
         },
       ]}
