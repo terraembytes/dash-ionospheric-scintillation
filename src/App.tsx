@@ -1,6 +1,6 @@
 import './App.css'
 import imglogo from './assets/img/logo.png'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import ScatterGeral from './components/graphs/ScatterGeral.tsx'
 import CountS4Interval from './components/graphs/CountS4Interval.tsx'
 import { verifyString } from './utils/basicFunctions.ts'
@@ -10,49 +10,72 @@ import { getData, getDataCount, getDataSkyplot } from './conection/APIConection.
 
 function App() {
   //states temporarios para fins de teste
-  const [dateStart, setDateStart] = useState('2025-01-01');
-  const [dateEnd, setDateEnd] = useState('2025-01-02');
+  const [dateStart, setDateStart] = useState('2024-11-11');
+  const [dateEnd, setDateEnd] = useState('2024-11-12');
   const [station, setStation] = useState('CTAS');
   const [elev] = useState(0)
   const [elevType] = useState(1)
   const [constellation] = useState('GPS')
   const [time] = useState('1 minuto')
-  const [hourRange]  = useState(1)
-  const [dateChoosed] = useState('2025-01-01 10:00:00')
+  const [hourRange] = useState(1)
+  const [dateChoosed] = useState('2024-11-11 23:30:00')
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    dateStart: '2024-11-11',
+    dateEnd: '2024-11-12',
+    station: 'CTAS'
+  })
+
+  //states do grafico countS4
+  const [constellationCountS4, setConstellationCountS4] = useState('ALL')
+  const [elevCountS4, setElevCountS4] = useState(0)
+  const [elevTypeCountS4, setElevTypeCountS4] = useState(1)
+  const [timeCountS4, setTimeCountS4] = useState('1 minuto')
+
+  const [appliedFiltersCountS4, setAppliedFiltersCountS4] = useState({
+    constellation: 'ALL',
+    elev: 0,
+    elevType: 1,
+    time: '1 minuto'
+  })
 
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
-      queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange: null, dateChoosed: null }],
-      queryFn: getData,
-      refetchOnWindowFocus: false,
-      enabled: false //impede que ele execute de primeira
-    })
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange: null, dateChoosed: null }],
+    queryFn: getData,
+    refetchOnWindowFocus: false
+  })
 
   const graphCountS4 = useQuery({ //grafico da quantidade de satelites com indice S4 entre até 0.3 e até 0.6
-      queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart, dateEnd, station }],
-      queryFn: getDataCount,
-      refetchOnWindowFocus: false,
-      enabled: false
-    })
+    queryKey: ['dataCount', { elev: appliedFiltersCountS4.elev, elevType: appliedFiltersCountS4.elevType, constellation: appliedFiltersCountS4.constellation, time: appliedFiltersCountS4.time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station }],
+    queryFn: getDataCount,
+    refetchOnWindowFocus: false,
+  })
 
   const graphSkyplot = useQuery({
-    queryKey: ['data', { elev, elevType, constellation, time, dateStart, dateEnd, station, hourRange, dateChoosed }],
-      queryFn: getDataSkyplot,
-      refetchOnWindowFocus: false,
-      enabled: false //impede que ele execute de primeira
+    queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange, dateChoosed }],
+    queryFn: getDataSkyplot,
+    refetchOnWindowFocus: false,
+    // enabled: false //impede que ele execute de primeira
   })
 
   //chama o useQuery de cada grafico na renderização inicial da página
-  useEffect(() => {
-    graphGeral.refetch()
-    graphCountS4.refetch()
-    graphSkyplot.refetch()
-  }, [graphGeral.refetch, graphCountS4.refetch, graphSkyplot.refetch])
+  // useEffect(() => {
+  //   graphGeral.refetch()
+  //   graphCountS4.refetch()
+  //   graphSkyplot.refetch()
+  // }, [graphGeral.refetch, graphCountS4.refetch, graphSkyplot.refetch])
 
   //cada alteração feita nos inputs é atualizado nos states
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
   const dateStartChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateStart(e.target.value)
   const dateEndChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateEnd(e.target.value)
+
+  //changes para os filtros do grafico de CountS4
+  const constellationCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setConstellationCountS4(e.target.value)
+  const elevCountS4Change = (e: React.ChangeEvent<HTMLInputElement>) => setElevCountS4(Number(e.target.value))
+  const elevTypeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setElevTypeCountS4(Number(e.target.value))
+  const timeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setTimeCountS4(e.target.value)
 
   //função para realizar a pesquisa dos dados brutos
   function pesquisarDados(e: React.FormEvent<HTMLFormElement>) {
@@ -77,9 +100,23 @@ function App() {
       return
     }
 
-    graphGeral.refetch()
-    graphCountS4.refetch()
-    graphSkyplot.refetch()
+    setAppliedFilters({ dateStart, dateEnd, station })
+
+    // graphGeral.refetch()
+    // graphCountS4.refetch()
+    // graphSkyplot.refetch()
+  }
+
+  function filtrarCountS4(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    if(verifyString(timeCountS4)) {
+      alert("Tempo não informado!")
+      console.log("Tempo não informado!");
+      return
+    }
+
+    setAppliedFiltersCountS4({ constellation: constellationCountS4, elev: elevCountS4, elevType: elevTypeCountS4, time: timeCountS4 })
   }
 
   return (
@@ -87,65 +124,170 @@ function App() {
       {/*DIV DO HEADER*/}
       <div className='flex justify-between items-center p-2 titles-css text-amber-50 rounded-2xl shadow-lg'>
         <div><img src={imglogo} alt="logo do projeto" width={110} height={100} /></div>
-        <div>Análise do Índice S4</div>
+        <div className='font-extrabold text-4xl'>Análise do Índice S4</div>
         <div>Resumo</div>
       </div>
-      {/*DIV DOS FILTROS INICIAIS*/}
-      <div className='titles-css p-2 rounded-2xl shadow-lg mt-6 text-amber-50'>
-        <span className='font-bold'>Filtros básicos</span>
-        {/*FILTROS BÁSICOS*/}
-        <form onSubmit={pesquisarDados} id='form-basic-filters'>
-          <div className='p-2 flex flex-row gap-5'>
-            {/*INPUT DA DATA INICIAL*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="inputDateStart" className='font-bold'>Data inicial: </label>
-              <input type='date' id='inputDateStart' value={dateStart} onChange={dateStartChange} />
+
+      <div className='grid grid-flow-col grid-rows-2 gap-4'>
+        {/*DIV DOS FILTROS INICIAIS*/}
+        <div className='titles-css p-2 rounded-2xl shadow-lg mt-5 text-amber-50 row-span-15'>
+          <span className='font-bold'>Filtros básicos</span>
+          {/*FILTROS BÁSICOS*/}
+          <form onSubmit={pesquisarDados} id='form-basic-filters'>
+            <div className='p-2 grid grid-flow-col grid-rows-4 gap-4 w-full'>
+              {/*INPUT DA DATA INICIAL*/}
+              <div className='border-2 p-1 rounded-md flex items-center'>
+                <label htmlFor="inputDateStart" className='font-bold whitespace-nowrap'>Data inicial: </label>
+                <input type='date' id='inputDateStart' value={dateStart} className='cursor-pointer' onChange={dateStartChange} />
+              </div>
+              {/*INPUT DA DATA FINAL*/}
+              <div className='border-2 p-1 rounded-md flex items-center'>
+                <label htmlFor="inputDateEnd" className='font-bold whitespace-nowrap'>Data Final: </label>
+                <input type="date" id='inputDateEnd' value={dateEnd} className='cursor-pointer' onChange={dateEndChange} />
+              </div>
+              {/*DROPDOWN COM AS ESTAÇÕES*/}
+              <div className='border-2 p-1 rounded-md flex items-center gap-2'>
+                <label htmlFor="dropdownStation" className='font-bold whitespace-nowrap'>Estação: </label>
+                <select name="dropdownStation" id="dropdownStation" value={station} className='cursor-pointer' onChange={stationChange}>
+                  <option value="CTAS">CTAS</option>
+                  <option value="CTAS">Teste 1</option>
+                  <option value="CTAS">Teste 2</option>
+                </select>
+              </div>
+              {/*BOTÃO PARA EXECUTAR OS FILTROS BÁSICOS*/}
+              <button
+                className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'
+                type='submit'>
+                PESQUISAR
+              </button>
             </div>
-            {/*INPUT DA DATA FINAL*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="inputDateEnd" className='font-bold'>Data Final: </label>
-              <input type="date" id='inputDateEnd' value={dateEnd} onChange={dateEndChange} />
+          </form>
+        </div>
+        {/*Div dos blocos */}
+        <div className='col-span-12 mt-5 grid grid-cols-3 gap-2 h-60'>
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl titles-css p-1 flex justify-center items-center text-amber-50'>
+              <span className='text-center text-4xl'>Satélites com forte cintilação</span>
             </div>
-            {/*DROPDOWN COM AS ESTAÇÕES*/}
-            <div className='border-2 p-1 rounded-md'>
-              <label htmlFor="dropdownStation" className='font-bold'>Estação: </label>
-              <select name="dropdownStation" id="dropdownStation" value={station} onChange={stationChange}>
-                <option value="CTAS">CTAS</option>
-                <option value="CTAS">Teste 1</option>
-                <option value="CTAS">Teste 2</option>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>25</span>
+            </div>
+          </div>
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl p-1 flex justify-center items-center titles-css text-amber-50'>
+              <span className='text-center text-4xl'>Constelação</span>
+            </div>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>GPS</span>
+            </div>
+          </div>
+          <div className='grid grid-flow-col grid-rows-3'>
+            <div className='rounded-t-2xl p-1 flex justify-center items-center titles-css text-amber-50'>
+              <span className='text-center text-4xl'>Horário</span>
+            </div>
+            <div className='flex justify-center items-center bg-amber-100 h-full row-span-2 rounded-b-2xl shadow-2xl'>
+              <span className='text-center text-7xl'>02:30:45</span>
+            </div>
+          </div>
+        </div>
+        <div className='col-span-12 row-span-14'>
+          <div className='bg-[#847c74] shadow-2xl h-full w-full overflow-hidden flex justify-center items-center rounded-2xl border-[#847c74]'>
+            {/*Gráfico geral do índice S4*/}
+            {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${appliedFilters.dateStart} a ${appliedFilters.dateEnd}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
+        </div>
+      </div>
+
+      {/*DIV DA AREA DOS DASHBOARDS*/}
+      <div className='w-full h-full mt-3 rounded-2xl shadow-lg grid grid-cols-2 gap-4'>
+        {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
+        <div className='p-1 w-full h-fit rounded-2xl'>
+          {/*Filtros do grafico countS4 */}
+          <form onSubmit={filtrarCountS4} id='form-filters-countS4'>
+            <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+              <div className='p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
+                {/*Dropdown para a escala de tempo do grafico countS4 */}
+                <label htmlFor="dropdownTimeScale" className='font-bold'>Escala de Tempo: </label>
+                <select name="dropdownTimeScale" value={timeCountS4} onChange={timeCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value="1 minuto">1 minuto</option>
+                  <option value="5 minutos">5 minutos</option>
+                  <option value="10 minutos">10 minutos</option>
+                  <option value="30 minutos">30 minutos</option>
+                  <option value="1 hora">1 hora</option>
+                  <option value="2 horas">2 horas</option>
+                  <option value="3 horas">3 horas</option>
+                  <option value="4 horas">4 horas</option>
+                </select>
+              </div>
+              {/*conjunto de filtros para a elevacao */}
+              <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+                <label htmlFor="dropdownElevationType" className='font-bold'>Elevação </label>
+                <select name="dropdownElevationType" id="dropdownElevationType" value={elevTypeCountS4} onChange={elevTypeCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value={4}> maior que </option>
+                  <option value={5}> menor que </option>
+                  <option value={3}> igual a </option>
+                  <option value={1}> maior ou igual a </option>
+                  <option value={2}> menor ou igual a </option>
+                </select>
+                <input type="number" name="" id="" min={0} max={90} step={0.1} value={elevCountS4} onChange={elevCountS4Change} className='w-15 ' />
+              </div>
+              {/*Filtro da constelacao do grafico countS4 */}
+              <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+                <label htmlFor="dropdownConstellationCountS4" className='font-bold'>Constelação: </label>
+                <select name="dropdownconstellationCountS4" id="" value={constellationCountS4} onChange={constellationCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value="ALL">Todas</option>
+                  <option value="GPS">GPS</option>
+                  <option value="GLONASS">GLONASS</option>
+                  <option value="GALILEO">GALILEO</option>
+                  <option value="BEIDOU">BEIDOU</option>
+                </select>
+              </div>
+              <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+                FILTRAR
+              </button>
+            </div>
+          </form>
+          <hr />
+          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
+            {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${appliedFilters.dateStart} a ${appliedFilters.dateEnd}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
+        </div>
+        {/*Divs relacionadas ao grafico Skyplot S4 */}
+        <div className='p-1 w-full h-fit'>
+          {/*Filtros do grafico skyplot S4 */}
+          <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+            {/*Filtro da constelacao do grafico Skyplot S4 */}
+            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+              <label htmlFor="dropdownConstellationCountS4" className='font-bold'>Constelação: </label>
+              <select name="dropdownElevationType" id="dropdownConstellationCountS4" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                <option value="">GPS</option>
+                <option value="">GLONASS</option>
+                <option value="">GALILEO</option>
+                <option value="">BEIDOU</option>
               </select>
             </div>
-            {/*BOTÃO PARA EXECUTAR OS FILTROS BÁSICOS*/}
-            <button
-              className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'
-              type='submit'
-            >
-              PESQUISAR
+            {/*Input hora desejada do grafico skyplot S4*/}
+            <div className='border-2 p-1 rounded-md titles-css text-amber-50'>
+              <label htmlFor="inputTimeskyplotS4" className='font-bold'>Hora Desejada: </label>
+              <input type='time' id='inputTimeSkyplotS4' step={1} min={0} className='cursor-pointer' />
+            </div>
+            {/*Botao de submit dos filtros */}
+            <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+              FILTRAR
             </button>
           </div>
-        </form>
-      </div>
-      {/*DIV DA AREA DOS DASHBOARDS*/}
-      <div className='bg-gray-100 w-full h-full mt-6 rounded-2xl p-4 shadow-lg grid grid-cols-2 gap-4'>
-        <div className='border shadow-md p-1 w-full h-fit'>
-          {/*Gráfico geral do índice S4*/}
-          {graphGeral.data != null ? (<ScatterGeral data={graphGeral.data} title={`Índice S4 de Todas Constelações - ${dateStart} a ${dateEnd}`} />)
-          :(<p>Carregando gráfico ...</p>)
-          }
-        </div>
-        <div className='border shadow-md p-1 w-full h-fit'>
-          {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
-          {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${dateStart} a ${dateEnd}`} />)
-          : (<p>Carregando gráfico ...</p>)
-        } 
-        </div>
-        <div className='border shadow-md p-1 w-full h-fit'>
+          <hr />
           {/*Gráfico Skyplot teste*/}
-          {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} title={`Skyplot Teste - ${constellation}`}/>)
-          : (<p>Carregando gráfico ...</p>)
-          }
+          <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
+            {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`} />)
+              : (<p>Carregando gráfico ...</p>)
+            }
+          </div>
         </div>
-        <div className='border shadow-md p-1'>Gráfico 4</div>
       </div>
     </div>
   )

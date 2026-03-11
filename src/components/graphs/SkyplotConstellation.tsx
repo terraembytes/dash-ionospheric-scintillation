@@ -1,17 +1,18 @@
 import Plot from 'react-plotly.js'
-import type { DataGeral } from '../../models/DataGeral'
+import type { DataSkyplot } from '../../models/DataSkyplot'
+
+interface SkyplotS4Size extends DataSkyplot{
+  sizePlot: string
+  alphaPlot: string
+}
 
 interface Props {
-  data: DataGeralSkyplot[],
-  title: string
+  data: SkyplotS4Size[],
+  titles: string
 }
 
-interface DataGeralSkyplot extends DataGeral {
-  Azimute: string
-  Intensity: string
-}
+function SkyplotConstellation({ data = [], titles }: Props) {
 
-function SkyplotConstellation({ data = [], title }: Props) {
   return (
     <Plot
       data={[
@@ -20,14 +21,35 @@ function SkyplotConstellation({ data = [], title }: Props) {
           type: 'scatterpolar',
           r: data.map(p => Number(p.Elevation)),
           theta: data.map(p => Number(p.Azimute)),
+          text: data.map(p => p.Svid.toString()),
+          textposition: 'middle left',
+          textfont: { size: 11, color: '#000000' },
+          cliponaxis: false,
+          name: 'Satélites',
+          hovertemplate:
+          'SVID: %{text}<br>' +
+          'Elev: %{r:.1f}°<br>' +
+          'Azimute: %{theta:.1f}°<br>' +
+          'S4: %{marker.color:.3f}<br>',
           marker: { 
-            color: data.map(p => p.Intensity),
-            size: 10
+            color: data.map(p => p.S4),
+            opacity: data.map(p => Number(p.alphaPlot)),
+            size: data.map(p => Number(p.sizePlot)),
+            colorscale: 'Jet',
+            cmin: 0,
+            cmax: 1.2,
+            colorbar: {
+              title: {text:'S₄(L1)'},
+              tickvals: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2],
+              ticktext: ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0', '1.2'],
+              x: 1
+            },
+            line: { width: 1, color: '#ffffff' }
           }
-        }
+        },
       ]}
       layout={{ 
-        title: { text: title }, 
+        title: { text: titles }, 
         autosize: true,
         polar: {
           domain: { y: [0, 0.9] },
@@ -51,6 +73,10 @@ function SkyplotConstellation({ data = [], title }: Props) {
             linecolor: '#000000'
           },
         },
+        showlegend: false
+      }}
+      config={{
+        displayModeBar: true,
       }}
       useResizeHandler={true}
       className="w-full h-full"
