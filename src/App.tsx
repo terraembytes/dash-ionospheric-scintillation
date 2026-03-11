@@ -26,6 +26,19 @@ function App() {
     station: 'CTAS'
   })
 
+  //states do grafico countS4
+  const [constellationCountS4, setConstellationCountS4] = useState('ALL')
+  const [elevCountS4, setElevCountS4] = useState(0)
+  const [elevTypeCountS4, setElevTypeCountS4] = useState(1)
+  const [timeCountS4, setTimeCountS4] = useState('1 minuto')
+
+  const [appliedFiltersCountS4, setAppliedFiltersCountS4] = useState({
+    constellation: 'ALL',
+    elev: 0,
+    elevType: 1,
+    time: '1 minuto'
+  })
+
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
     queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange: null, dateChoosed: null }],
@@ -34,7 +47,7 @@ function App() {
   })
 
   const graphCountS4 = useQuery({ //grafico da quantidade de satelites com indice S4 entre até 0.3 e até 0.6
-    queryKey: ['dataCount', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station }],
+    queryKey: ['dataCount', { elev: appliedFiltersCountS4.elev, elevType: appliedFiltersCountS4.elevType, constellation: appliedFiltersCountS4.constellation, time: appliedFiltersCountS4.time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station }],
     queryFn: getDataCount,
     refetchOnWindowFocus: false,
   })
@@ -57,6 +70,12 @@ function App() {
   const stationChange = (e: React.ChangeEvent<HTMLSelectElement>) => setStation(e.target.value)
   const dateStartChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateStart(e.target.value)
   const dateEndChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateEnd(e.target.value)
+
+  //changes para os filtros do grafico de CountS4
+  const constellationCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setConstellationCountS4(e.target.value)
+  const elevCountS4Change = (e: React.ChangeEvent<HTMLInputElement>) => setElevCountS4(Number(e.target.value))
+  const elevTypeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setElevTypeCountS4(Number(e.target.value))
+  const timeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setTimeCountS4(e.target.value)
 
   //função para realizar a pesquisa dos dados brutos
   function pesquisarDados(e: React.FormEvent<HTMLFormElement>) {
@@ -86,6 +105,18 @@ function App() {
     // graphGeral.refetch()
     // graphCountS4.refetch()
     // graphSkyplot.refetch()
+  }
+
+  function filtrarCountS4(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    if(verifyString(timeCountS4)) {
+      alert("Tempo não informado!")
+      console.log("Tempo não informado!");
+      return
+    }
+
+    setAppliedFiltersCountS4({ constellation: constellationCountS4, elev: elevCountS4, elevType: elevTypeCountS4, time: timeCountS4 })
   }
 
   return (
@@ -174,48 +205,50 @@ function App() {
         {/*Gráfico com a contagem de satélites com determinando intervalo do índice S4*/}
         <div className='p-1 w-full h-fit rounded-2xl'>
           {/*Filtros do grafico countS4 */}
-          <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
-            <div className='p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
-              {/*Dropdown para a escala de tempo do grafico countS4 */}
-              <label htmlFor="dropdownTimeScale" className='font-bold'>Escala de Tempo: </label>
-              <select name="dropdownTimeScale" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
-                <option value="1 minuto">1 minuto</option>
-                <option value="5 minutos">5 minutos</option>
-                <option value="10 minutos">10 minutos</option>
-                <option value="30 minutos">30 minutos</option>
-                <option value="1 hora">1 hora</option>
-                <option value="2 horas">2 horas</option>
-                <option value="3 horas">3 horas</option>
-                <option value="4 horas">4 horas</option>
-              </select>
+          <form onSubmit={filtrarCountS4} id='form-filters-countS4'>
+            <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+              <div className='p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50 shadow-2xl'>
+                {/*Dropdown para a escala de tempo do grafico countS4 */}
+                <label htmlFor="dropdownTimeScale" className='font-bold'>Escala de Tempo: </label>
+                <select name="dropdownTimeScale" value={timeCountS4} onChange={timeCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value="1 minuto">1 minuto</option>
+                  <option value="5 minutos">5 minutos</option>
+                  <option value="10 minutos">10 minutos</option>
+                  <option value="30 minutos">30 minutos</option>
+                  <option value="1 hora">1 hora</option>
+                  <option value="2 horas">2 horas</option>
+                  <option value="3 horas">3 horas</option>
+                  <option value="4 horas">4 horas</option>
+                </select>
+              </div>
+              {/*conjunto de filtros para a elevacao */}
+              <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+                <label htmlFor="dropdownElevationType" className='font-bold'>Elevação </label>
+                <select name="dropdownElevationType" id="dropdownElevationType" value={elevTypeCountS4} onChange={elevTypeCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value={4}> maior que </option>
+                  <option value={5}> menor que </option>
+                  <option value={3}> igual a </option>
+                  <option value={1}> maior ou igual a </option>
+                  <option value={2}> menor ou igual a </option>
+                </select>
+                <input type="number" name="" id="" min={0} max={90} step={0.1} value={elevCountS4} onChange={elevCountS4Change} className='w-15 ' />
+              </div>
+              {/*Filtro da constelacao do grafico countS4 */}
+              <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+                <label htmlFor="dropdownConstellationCountS4" className='font-bold'>Constelação: </label>
+                <select name="dropdownconstellationCountS4" id="" value={constellationCountS4} onChange={constellationCountS4Change} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value="ALL">Todas</option>
+                  <option value="GPS">GPS</option>
+                  <option value="GLONASS">GLONASS</option>
+                  <option value="GALILEO">GALILEO</option>
+                  <option value="BEIDOU">BEIDOU</option>
+                </select>
+              </div>
+              <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+                FILTRAR
+              </button>
             </div>
-            {/*conjunto de filtros para a elevacao */}
-            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
-              <label htmlFor="" className='font-bold'>Elevação </label>
-              <select name="dropdownElevationType" id="" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
-                <option value=""> maior que </option>
-                <option value=""> menor que </option>
-                <option value=""> igual a </option>
-                <option value=""> maior ou igual a </option>
-                <option value=""> menor ou igual a </option>
-              </select>
-              <input type="number" name="" id="" min={0} max={2} step={0.1} className='w-15 ' />
-            </div>
-            {/*Filtro da constelacao do grafico countS4 */}
-            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
-              <label htmlFor="" className='font-bold'>Constelação: </label>
-              <select name="dropdownElevationType" id="" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
-                <option value="">Todas</option>
-                <option value="">GPS</option>
-                <option value="">GLONASS</option>
-                <option value="">GALILEO</option>
-                <option value="">BEIDOU</option>
-              </select>
-            </div>
-            <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
-              FILTRAR
-            </button>
-          </div>
+          </form>
           <hr />
           <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
             {graphCountS4.data != null ? (<CountS4Interval data={graphCountS4.data} title={`Quantidade de satélites com S4 entre 0.3 e 0.6 - ${appliedFilters.dateStart} a ${appliedFilters.dateEnd}`} />)
