@@ -18,9 +18,9 @@ function ScatterGeral({ data = [], title }: Props) {
           marker: { color: data.map((dados: DataGeral) => { return dados.Svid }) }
         }
       ]}
-      layout={{ title: { text: title }, autosize: true }}
+      layout={{ title: { text: title }, autosize: true}}
       useResizeHandler={true}
-      className="w-full h-full"
+      className="w-full h-full rounded-2xl"
     />
   )
 }
