@@ -39,6 +39,15 @@ function App() {
     time: '1 minuto'
   })
 
+  //states dom grafico skyplot
+  const [constellationSkyplot, setConstellationSkyplot] = useState('GPS')
+  const [dateChoosedSkyplot, setDateChoosedSkyplot] = useState('23:30:00')
+
+  const [appliedFiltersSkyplot, setAppliedFiltersSkyplot] = useState({
+    constellation: 'GPS',
+    dateChoosed: '2024-11-11 23:30:00'
+  })
+
   //constantes com os dados retornados de cada gráfico
   const graphGeral = useQuery({ //grafico geral
     queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange: null, dateChoosed: null }],
@@ -53,7 +62,7 @@ function App() {
   })
 
   const graphSkyplot = useQuery({
-    queryKey: ['data', { elev, elevType, constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange, dateChoosed }],
+    queryKey: ['data', { elev, elevType, constellation: appliedFiltersSkyplot.constellation, time, dateStart: appliedFilters.dateStart, dateEnd: appliedFilters.dateEnd, station: appliedFilters.station, hourRange, dateChoosed: appliedFiltersSkyplot.dateChoosed }],
     queryFn: getDataSkyplot,
     refetchOnWindowFocus: false,
     // enabled: false //impede que ele execute de primeira
@@ -76,6 +85,10 @@ function App() {
   const elevCountS4Change = (e: React.ChangeEvent<HTMLInputElement>) => setElevCountS4(Number(e.target.value))
   const elevTypeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setElevTypeCountS4(Number(e.target.value))
   const timeCountS4Change = (e: React.ChangeEvent<HTMLSelectElement>) => setTimeCountS4(e.target.value)
+
+  //changes para os filtros do grafico skyplot
+  const constellationSkyplotChange = (e: React.ChangeEvent<HTMLSelectElement>) => setConstellationSkyplot(e.target.value)
+  const dateChoosedSkyplotChange = (e: React.ChangeEvent<HTMLInputElement>) => setDateChoosedSkyplot(e.target.value)
 
   //função para realizar a pesquisa dos dados brutos
   function pesquisarDados(e: React.FormEvent<HTMLFormElement>) {
@@ -110,13 +123,27 @@ function App() {
   function filtrarCountS4(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if(verifyString(timeCountS4)) {
+    if (verifyString(timeCountS4)) {
       alert("Tempo não informado!")
       console.log("Tempo não informado!");
       return
     }
 
     setAppliedFiltersCountS4({ constellation: constellationCountS4, elev: elevCountS4, elevType: elevTypeCountS4, time: timeCountS4 })
+  }
+
+  function filtrarSkyplot(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    if (verifyString(dateChoosedSkyplot)) {
+      alert("Tempo não informado!")
+      console.log("Tempo não informado!")
+      return
+    }
+
+    let date = appliedFilters.dateStart + " " + dateChoosedSkyplot
+
+    setAppliedFiltersSkyplot({ constellation: constellationSkyplot, dateChoosed: date })
   }
 
   return (
@@ -258,32 +285,34 @@ function App() {
         </div>
         {/*Divs relacionadas ao grafico Skyplot S4 */}
         <div className='p-1 w-full h-fit'>
-          {/*Filtros do grafico skyplot S4 */}
-          <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
-            {/*Filtro da constelacao do grafico Skyplot S4 */}
-            <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
-              <label htmlFor="dropdownConstellationCountS4" className='font-bold'>Constelação: </label>
-              <select name="dropdownElevationType" id="dropdownConstellationCountS4" className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
-                <option value="">GPS</option>
-                <option value="">GLONASS</option>
-                <option value="">GALILEO</option>
-                <option value="">BEIDOU</option>
-              </select>
+          <form onSubmit={filtrarSkyplot} id='form-filters-skyplot'>
+            {/*Filtros do grafico skyplot S4 */}
+            <div className='pb-3 flex justify-center gap-3 bg-amber-100 p-2 rounded-t-2xl'>
+              {/*Filtro da constelacao do grafico Skyplot S4 */}
+              <div className='border-2 p-1 rounded-md flex justify-center gap-3 titles-css text-amber-50'>
+                <label htmlFor="dropdownConstellationSkyplot" className='font-bold'>Constelação: </label>
+                <select name="dropdownElevationType" id="dropdownConstellationskyplot" onChange={constellationSkyplotChange} value={constellationSkyplot} className='text-amber-200 appearance-none cursor-pointer hover:text-amber-400'>
+                  <option value="GPS">GPS</option>
+                  <option value="GLONASS">GLONASS</option>
+                  <option value="GALILEO">GALILEO</option>
+                  <option value="BEIDOU">BEIDOU</option>
+                </select>
+              </div>
+              {/*Input hora desejada do grafico skyplot S4*/}
+              <div className='border-2 p-1 rounded-md titles-css text-amber-50'>
+                <label htmlFor="inputTimeskyplotS4" className='font-bold'>Hora Desejada: </label>
+                <input type='time' id='inputTimeSkyplotS4' step={1} min={0} onChange={dateChoosedSkyplotChange} value={dateChoosedSkyplot} className='cursor-pointer' />
+              </div>
+              {/*Botao de submit dos filtros */}
+              <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
+                FILTRAR
+              </button>
             </div>
-            {/*Input hora desejada do grafico skyplot S4*/}
-            <div className='border-2 p-1 rounded-md titles-css text-amber-50'>
-              <label htmlFor="inputTimeskyplotS4" className='font-bold'>Hora Desejada: </label>
-              <input type='time' id='inputTimeSkyplotS4' step={1} min={0} className='cursor-pointer' />
-            </div>
-            {/*Botao de submit dos filtros */}
-            <button type='submit' className='rounded-lg border border-amber-50 p-1 bg-[#e9d4ba] text-[#847c74] font-bold cursor-pointer hover:bg-[#a09489] hover:text-[#e9d4ba]'>
-              FILTRAR
-            </button>
-          </div>
+          </form>
           <hr />
           {/*Gráfico Skyplot teste*/}
           <div className='rounded-b-2xl flex justify-center items-center overflow-hidden shadow-2xl'>
-            {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${dateChoosed} - ${constellation}`} />)
+            {graphSkyplot.data != null ? (<SkyplotConstellation data={graphSkyplot.data} titles={`Skyplot S4 - Date ${appliedFiltersSkyplot.dateChoosed} - ${appliedFiltersSkyplot.constellation}`} />)
               : (<p>Carregando gráfico ...</p>)
             }
           </div>
